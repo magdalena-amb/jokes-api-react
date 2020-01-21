@@ -13,7 +13,9 @@ export default class JokeList extends Component {
     state = {
         jokes: JSON.parse(window.localStorage.getItem('jokes') || '[]'),
         loading: false,
-    }   
+    }
+    
+    seenJokes = new Set(this.state.jokes.map(j => j.text));
     
     componentDidMount() {
         if(this.state.jokes.length === 0){
@@ -23,12 +25,18 @@ export default class JokeList extends Component {
     }
 
     async getJokes() {
-        let jokes = [];
+        try{
+            let jokes = [];
         while( jokes.length < this.props.numJokesToGet) {
             let res = await axios.get('https://icanhazdadjoke.com/', {
             headers: { Accept: "application/json "}
             });
+            let newJoke = res.data.joke;
+            if (!this.seenJokes.has(newJoke)) {
             jokes.push({id:uuid(), text:res.data.joke, votes: 0});
+            } else {
+                console.log("Duplicate:", newJoke);
+            }
         } 
 
         this.setState(st => ({
@@ -36,6 +44,10 @@ export default class JokeList extends Component {
             loading: false,
          }),
         () => window.localStorage.setItem("jokes", JSON.stringify(this.state.jokes)));
+        } catch(e){
+            alert(e);
+        }
+        
     }
 
     handleVote = (id, delta) => {
@@ -64,6 +76,7 @@ export default class JokeList extends Component {
                 
             )
         }
+        let jokes =  this.state.jokes.sort((a,b) => b.votes - a.votes);
         return (
             <div className='JokeList'>
                 <div className='JokeList-sidebar'>
@@ -72,7 +85,7 @@ export default class JokeList extends Component {
                     <button onClick={this.handleClick} className='JokeList-getmore'> New Jokes </button>
                 </div>
                 <div className='JokeList-jokes'>
-                    {this.state.jokes.map(j => (
+                    {jokes.map(j => (
                         <Joke 
                         upvote={() => this.handleVote(j.id, 1)}
                         downvote={() => this.handleVote(j.id, -1)}

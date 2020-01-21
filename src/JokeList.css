@@ -47,7 +47,7 @@
 
 .JokeList-spinner {
     font-size: 130px;
-    color: #fff;
+    color: #4a3563;
     text-align: center;
 }
 
@@ -63,6 +63,8 @@
 @media (max-width:1023px) {
     .JokeList {
         flex-direction: column;
+        width: 96%;
+        height: 98%;
     }
     .JokeList-sidebar {
         width: 100%;
@@ -72,5 +74,8 @@
     }
     .JokeList-sidebar img {
         width: 30%;
+    }
+    .JokeList-jokes {
+        width: 100%;
     }
 }
