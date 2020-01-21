@@ -3,14 +3,16 @@ import axios from 'axios';
 import Joke from './Joke';
 import './JokeList.css';
 import uuid from 'uuid/v4';
+import { FaLaugh } from "react-icons/fa";
 
 export default class JokeList extends Component {
     static defaultProps = {
-        numJokesToGet: 10,
+        numJokesToGet: 5,
     };
 
     state = {
-        jokes: JSON.parse(window.localStorage.getItem('jokes') || '[]')
+        jokes: JSON.parse(window.localStorage.getItem('jokes') || '[]'),
+        loading: false,
     }   
     
     componentDidMount() {
@@ -27,9 +29,12 @@ export default class JokeList extends Component {
             headers: { Accept: "application/json "}
             });
             jokes.push({id:uuid(), text:res.data.joke, votes: 0});
-            console.log(res);
         } 
-        this.setState(st => ({jokes: [...st.jokes, ...jokes]}),
+
+        this.setState(st => ({
+            jokes: [...st.jokes, ...jokes],
+            loading: false,
+         }),
         () => window.localStorage.setItem("jokes", JSON.stringify(this.state.jokes)));
     }
 
@@ -44,24 +49,38 @@ export default class JokeList extends Component {
     }
 
     handleClick = () => {
-        this.getJokes();
+        this.setState(
+            {loading: true},
+            this.getJokes);
     }
 
-    render = () => (
-        <div className='JokeList'>
-            <div className='JokeList-sidebar'>
-                <h1 className='JokeList-title'><span>Dad</span> Jokes</h1> 
-                <img src='https://assets.dryicons.com/uploads/icon/svg/8927/0eb14c71-38f2-433a-bfc8-23d9c99b3647.svg' alt='smily face'/>
-                <button onClick={this.handleClick} className='JokeList-getmore'> New Jokes </button>
+    render() {
+        if (this.state.loading) {
+            return (
+                <div className='JokeList-spinner'>
+                    <FaLaugh className='JokeList-spinner-icon' />
+                    <h1 className='JokeList-title'>Loading...</h1>
+                </div>
+                
+            )
+        }
+        return (
+            <div className='JokeList'>
+                <div className='JokeList-sidebar'>
+                    <h1 className='JokeList-title'><span>Dad</span> Jokes</h1> 
+                    <img src='https://assets.dryicons.com/uploads/icon/svg/8927/0eb14c71-38f2-433a-bfc8-23d9c99b3647.svg' alt='smily face'/>
+                    <button onClick={this.handleClick} className='JokeList-getmore'> New Jokes </button>
+                </div>
+                <div className='JokeList-jokes'>
+                    {this.state.jokes.map(j => (
+                        <Joke 
+                        upvote={() => this.handleVote(j.id, 1)}
+                        downvote={() => this.handleVote(j.id, -1)}
+                         key={j.id} text={j.text}  votes={j.votes} />
+                    ))}
+                </div>
             </div>
-            <div className='JokeList-jokes'>
-                {this.state.jokes.map(j => (
-                    <Joke 
-                    upvote={() => this.handleVote(j.id, 1)}
-                    downvote={() => this.handleVote(j.id, -1)}
-                     key={j.id} text={j.text}  votes={j.votes} />
-                ))}
-            </div>
-        </div>
-    )
+        )
+    } 
+    
 }

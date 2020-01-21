@@ -45,6 +45,21 @@
 
 }
 
+.JokeList-spinner {
+    font-size: 130px;
+    color: #fff;
+    text-align: center;
+}
+
+.JokeList-spinner-icon {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg);
+    }
+}
+
 @media (max-width:1023px) {
     .JokeList {
         flex-direction: column;

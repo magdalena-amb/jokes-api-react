@@ -44,13 +44,13 @@ export default class Joke extends Component {
         return (
             <div className='Joke'>
                <div className='Joke-buttons'>
-                   <FaArrowUp className='Joke-upvote' onClick={upvote}/>
+                    <FaArrowDown className='Joke-downvote' onClick={downvote}/>  
                     <span className='Joke-votes' style={{borderColor:this.getColor()}}>{this.props.votes} </span>
-                   <FaArrowDown className='Joke-downvote' onClick={downvote}/>
+                    <FaArrowUp className='Joke-upvote' onClick={upvote}/>
                 </div>
                 <div className='Joke-text'>{this.props.text} </div> 
                 <div className='Joke-smiley'>
-                <i className={this.getEmoji()} aria-role="presentation" aria-label="ROLLING ON THE FLOOR LAUGHING"></i>
+                <i className={this.getEmoji()} aria-label="ROLLING ON THE FLOOR LAUGHING"></i>
                     </div> 
             </div>
         )
